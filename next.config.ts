@@ -2,10 +2,11 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  // 1. Enable SWC Minification (Default in Next.js, faster than Babel)
+  // Performance Optimizations
   swcMinify: true,
+  compress: true,
 
-  // 2. Configure external image domains (required for your Hero and CaseStudy images)
+  // Image Optimization
   images: {
     remotePatterns: [
       {
@@ -13,43 +14,127 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
       },
       {
-        // Allow images served via 'figma' domains if necessary, 
-        // though the links provided seem to use Unsplash domains.
         protocol: 'https',
-        hostname: '*.unsplash.com', 
+        hostname: '*.unsplash.com',
       }
-    ]
+    ],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
   },
 
-  // 3. Custom Webpack Configuration (to handle explicit Vite-style aliases, if needed)
+  // Headers for Security and Performance
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
+          }
+        ],
+      },
+      {
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+
+  // Experimental Features for Performance
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
+
+  // Webpack Configuration
   webpack: (config, { isServer }) => {
-    
-    // Alias configuration: 
-    // Next.js automatically respects 'paths' defined in tsconfig.json 
-    // (e.g., the '@/components' alias is handled).
-    // The specific library aliases from your Vite config are usually unnecessary 
-    // in Next.js but can be included here if you ran into specific resolving issues.
-    
-    // For the path alias: '@': path.resolve(__dirname, './src')
-    // This is already handled by tsconfig.json, but you can explicitly add it to webpack if needed.
     config.resolve.alias = {
-        ...config.resolve.alias, // Keep existing aliases
-        '@': path.join(__dirname, 'src'), // Use path.join for cross-OS compatibility
+      ...config.resolve.alias,
+      '@': path.join(__dirname, 'src'),
     };
-    
-    // Remove the explicit package aliases from the old Vite config, 
-    // as Next.js/Webpack handles direct imports correctly.
-    
+
+    // Optimization for production
+    if (!isServer) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true
+            }
+          }
+        }
+      };
+    }
+
     return config;
   },
 
-  // 4. Output directory configuration (Next.js automatically uses '.next')
-  // We can't change the default output directory from '.next' to 'build' in Next.js.
-  // The 'build' folder is typically reserved for exporting the static site.
-  // We will omit the 'outDir' equivalent.
+  // Production Source Maps for Debugging
+  productionBrowserSourceMaps: false,
 
-  // 5. Development Server Configuration (Next.js defaults to port 3000 and auto-opens)
-  // No configuration needed here, as the defaults match your Vite setup's server block.
+  // PoweredBy Header Removal
+  poweredByHeader: false,
+
+  // React Strict Mode
+  reactStrictMode: true,
 };
 
 export default nextConfig;

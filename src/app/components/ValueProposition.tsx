@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useInView } from 'motion/react';
 import { useRef } from 'react';
 import { Bot, Target, Zap } from 'lucide-react';
@@ -127,7 +127,7 @@ export function ValueProposition() {
 
                 {/* Description */}
                 <p
-                  className="text-[#9CA3AF] flex-grow"
+                  className="text-[#9CA3AF] grow"
                   style={{
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '1rem',

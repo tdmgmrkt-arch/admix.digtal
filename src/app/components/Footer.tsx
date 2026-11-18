@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -34,25 +35,18 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Column 1: Logo & Tagline */}
           <div>
+           {/* Logo */}
             <motion.div
-              className="flex items-center space-x-2 mb-4"
+              className="flex items-center pb-5" // Removed space-x-2 as the image might handle spacing differently
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#06B6D4] to-[#84CC16] flex items-center justify-center shadow-lg shadow-[#06B6D4]/30">
-                <span className="text-white" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.5rem', fontWeight: 700 }}>
-                  A
-                </span>
-              </div>
-              <span
-                className="text-[#F9FAFB]"
-                style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '1.5rem',
-                  fontWeight: 600
-                }}
-              >
-                Admix Digital
-              </span>
+              <Image
+                src="/AMXDIG.png" // Path relative to the 'public' folder
+                alt="Admix Digital Logo"
+                width={160} // Adjust width as needed
+                height={40} // Adjust height as needed - maintain aspect ratio
+                priority // Add priority if it's above the fold for faster loading
+              />
             </motion.div>
 
             <p
@@ -135,20 +129,20 @@ export function Footer() {
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-[#9CA3AF]">
-                <MapPin size={18} className="mt-1 flex-shrink-0 text-[#06B6D4]" />
+                <MapPin size={18} className="mt-1 shrink-0 text-[#06B6D4]" />
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}>
                   123 Innovation Drive<br />
                   Temecula, CA 92590
                 </span>
               </li>
               <li className="flex items-center gap-3 text-[#9CA3AF] hover:text-[#06B6D4] transition-colors">
-                <Phone size={18} className="flex-shrink-0 text-[#06B6D4]" />
+                <Phone size={18} className="shrink-0 text-[#06B6D4]" />
                 <a href="tel:+19515551234" style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}>
                   (951) 555-1234
                 </a>
               </li>
               <li className="flex items-center gap-3 text-[#9CA3AF] hover:text-[#06B6D4] transition-colors">
-                <Mail size={18} className="flex-shrink-0 text-[#06B6D4]" />
+                <Mail size={18} className="shrink-0 text-[#06B6D4]" />
                 <a href="mailto:hello@admixdigital.com" style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}>
                   hello@admixdigital.com
                 </a>
